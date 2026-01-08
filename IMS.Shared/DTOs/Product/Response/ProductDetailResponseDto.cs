@@ -12,12 +12,11 @@ namespace IMS.Shared.DTOs.Product.Response
         public string ProductCode { get; set; } = null!;
         public string Name { get; set; } = null!;
         public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; } = null!;
         public decimal UnitPrice { get; set; }
         public int CurrentStock { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
-        public CategoryResponseDto Category { get; set; } = null!;
-        public ICollection<StockTransactionResponseDto> StockTransactions { get; set; } = new List<StockTransactionResponseDto>();
     }
 
     public class CategoryResponseDto

@@ -4,6 +4,7 @@ using IMS.Domain.Entities;
 using IMS.Infrastructure.DbContext;
 using IMS.Shared.DTOs.Product.Response;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +19,12 @@ namespace IMS.Infrastructure.Repository
         {
             try
             {
-                return _mapper.Map<List<ProductDetailResponseDto>>(await _dbContext.Products.Where(x => x.IsActive).ToListAsync());
+                return await _dbContext.ProductDetailResponseDto.FromSql($"EXEC dbo.sp_GetAllProductsWithCategory").AsNoTracking().ToListAsync();
             }
             catch (Exception ex)
             {
                 throw;
             }
         }
-        //public Task<List<ProductDetailResponseDto>> GetAllProducts()
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

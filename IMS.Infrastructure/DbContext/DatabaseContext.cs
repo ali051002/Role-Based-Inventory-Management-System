@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IMS.Domain.Entities;
+using IMS.Shared.DTOs.Product.Response;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IMS.Domain.Entities;
 
 namespace IMS.Infrastructure.DbContext
 {
@@ -21,10 +23,21 @@ namespace IMS.Infrastructure.DbContext
         //public DbSet<Role> Roles => Set<Role>();
         //public DbSet<UserRole> UserRoles => Set<UserRole>();
 
+
+        #region Models
         // Inventory
-        public DbSet<Product> Products => Set<Product>();
-        public DbSet<Category> Categories => Set<Category>();
-        public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
+        public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<StockTransaction> StockTransactions { get; set; } = null!;
+        #endregion
+
+        #region VMs
+
+        [NotMapped]
+        public DbSet<ProductDetailResponseDto> ProductDetailResponseDto { get; set; } = null!;
+
+        #endregion
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
