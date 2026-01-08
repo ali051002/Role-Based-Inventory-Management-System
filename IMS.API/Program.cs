@@ -1,11 +1,27 @@
+using AutoMapper;
+using IMS.Application.Interfaces.Repositories;
+using IMS.Application.Interfaces.Services;
+using IMS.Application.Mappings;
+using IMS.Application.Services;
 using IMS.Infrastructure.DbContext;
+using IMS.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+var mapperConfiguration = new MapperConfiguration(configuration =>
+{
+    configuration.AddProfile(new MappingProfile());
+}, new NullLoggerFactory());
+var mapper = mapperConfiguration.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
