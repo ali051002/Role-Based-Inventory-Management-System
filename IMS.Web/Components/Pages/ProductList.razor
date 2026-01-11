@@ -1,10 +1,11 @@
-﻿@page "/productList"
+﻿@page "/productList/{CategoryName}/{CategoryId}"
 @using IMS.Shared.DTOs.Product.Response
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <PageTitle>Products</PageTitle>
 
-<h1>Products</h1>
+<h1>@CategoryName Products</h1>
 
 @if (productDetailList == null)
 {
@@ -65,6 +66,10 @@ else
 }
 
 @code {
+    [Parameter]
+    public string CategoryId { get; set; }
+    [Parameter]
+    public string CategoryName { get; set; }
     private List<ProductDetailResponseDto> productDetailList { get; set; } = new();
     // protected RadzenDataGrid<ProductDetailResponseDto>? ProductGrid = new RadzenDataGrid<ProductDetailResponseDto>();
 
@@ -79,7 +84,7 @@ else
     {
         try
         {
-            var response = await clientApiService.SendGetAsync<List<ProductDetailResponseDto>>($"Product/GetProductList");
+            var response = await clientApiService.SendGetAsync<List<ProductDetailResponseDto>>($"Product/GetProductsByCategory?Id={Guid.Parse(CategoryId)}");
             if (response.IsSuccessStatusCode)
             {
                 productDetailList = (List<ProductDetailResponseDto>)response.ResultData;

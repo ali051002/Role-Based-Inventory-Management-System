@@ -1,4 +1,5 @@
 ﻿using IMS.Application.Interfaces.Services;
+using IMS.Shared.DTOs.Product.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,48 @@ namespace IMS.API.Controllers
             try
             {
                 var result = await _iProductService.GetAllProducts();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
+            }
+        }
+
+        [HttpGet("GetProductsByCategory")]
+        public async Task<IActionResult> GetProductsByCategory(Guid Id)
+        {
+            try
+            {
+                var result = await _iProductService.GetProductsByCategory(Id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
+            }
+        }
+
+        [HttpPost("SaveProduct")]
+        public async Task<IActionResult> SaveProduct(SaveProductRequestDto request)
+        {
+            try
+            {
+                await _iProductService.SaveProduct(request);
+                return Ok(new { Message = "Product saved successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
+            }
+        }
+
+        [HttpGet("GetProductById")]
+        public async Task<IActionResult> GetProductById(Guid Id)
+        {
+            try
+            {
+                var result = await _iProductService.GetProductById(Id);
                 return Ok(result);
             }
             catch (Exception ex)

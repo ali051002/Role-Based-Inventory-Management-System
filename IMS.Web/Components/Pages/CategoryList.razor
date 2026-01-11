@@ -2,6 +2,7 @@
 @using IMS.Shared.DTOs.Category.Response
 @using IMS.Shared.DTOs.Product.Response
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <PageTitle>Categories</PageTitle>
 
@@ -17,7 +18,8 @@ else
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Product Count</th>
+                <th>Total Products</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +28,9 @@ else
                 <tr>
                     <td>@Category.Name</td>
                     <td>@Category.ProductCount</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" type="button" @onclick="@(() => ViewProducts(@Category.Id, Category.Name))">View Products</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -90,4 +95,9 @@ else
         }
     }
     #endregion
+
+    private void ViewProducts(Guid categoryId, string categoryName)
+    {
+        navigationManager.NavigateTo($"/productList/{categoryName}/{categoryId}");
+    }
 }
