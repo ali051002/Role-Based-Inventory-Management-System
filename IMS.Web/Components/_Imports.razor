@@ -8,23 +8,20 @@
 @using Microsoft.JSInterop
 @using IMS.Web
 @using IMS.Web.Components
+@using IMS.Web.Services
+@using AutoMapper
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Radzen
+@using Radzen.Blazor
+@using Radzen.Blazor.Rendering
 
 
-@* @inject ApiClientService apiHelper
+
+@inject ClientApiService clientApiService
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
-@inject TranslationState translationState
-@inject SystemSettingState systemSettingState
-@inject SpinnerService spinnerService
-@inject DialogService dialogService
-@inject LoginState loginState
 @inject IConfiguration config
 @inject IJSRuntime jsInterop
 @inject IMapper mapper
-@inject ProtectedLocalStorage localStorage
-@inject CustomAuthenticationStateProvider authStateProvider
-@inject NotificationService notificationService
-@inject GridSearchExtension gridSearchExtension
-@inject InvalidRequestHandlerService invalidRequestHandler
-@inject IBlazorDownloadFileService blazorDownloadService
-@inject ExcelImportService excelImportService *@

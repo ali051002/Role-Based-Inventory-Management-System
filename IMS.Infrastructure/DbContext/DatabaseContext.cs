@@ -1,4 +1,5 @@
 ﻿using IMS.Domain.Entities;
+using IMS.Shared.DTOs.Category.Response;
 using IMS.Shared.DTOs.Product.Response;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -35,6 +36,7 @@ namespace IMS.Infrastructure.DbContext
 
         [NotMapped]
         public DbSet<ProductDetailResponseDto> ProductDetailResponseDto { get; set; } = null!;
+        public DbSet<CategoryDetailResponseDto> CategoryResponseDto { get; set; } = null!;
 
         #endregion
 

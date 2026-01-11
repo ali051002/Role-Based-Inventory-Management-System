@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\Category\Request\" />
     <Folder Include="DTOs\Product\Request\" />
+    <Folder Include="DTOs\StockTransaction\Request\" />
   </ItemGroup>
 
   <ItemGroup>

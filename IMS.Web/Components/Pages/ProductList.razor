@@ -1,0 +1,100 @@
+﻿@page "/productList"
+@using IMS.Shared.DTOs.Product.Response
+@attribute [StreamRendering]
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+@if (productDetailList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Unit Price</th>
+                <th>Current Stock</th>
+                <th>Created Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in productDetailList)
+            {
+                <tr>
+                    <td>@product.ProductCode</td>
+                    <td>@product.Name</td>
+                    <td>@product.CategoryName</td>
+                    <td>@product.UnitPrice</td>
+                    <td>@product.CurrentStock</td>
+                    <td>@product.CreatedDate.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @* <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                Product List
+            </div>
+        </div>
+        <div class="card-body">
+            <RadzenDataGrid @ref="ProductGrid" 
+                Data="@productDetailList" 
+                TItem="ProductDetailResponseDto" 
+                AllowPaging="true" 
+                PageSize="10" 
+                AllowSorting="true"
+                EmptyText="No Record Found">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="ProductCode" Title="Code" Width="120px" />
+                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="Name" Title="Name" Width="120px" />
+                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CategoryName" Title="Category" Width="120px" />
+                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
+                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
+                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    </div> *@
+}
+
+@code {
+    private List<ProductDetailResponseDto> productDetailList { get; set; } = new();
+    // protected RadzenDataGrid<ProductDetailResponseDto>? ProductGrid = new RadzenDataGrid<ProductDetailResponseDto>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    #region On Load Grid Data
+    private async Task LoadData()
+    {
+        try
+        {
+            var response = await clientApiService.SendGetAsync<List<ProductDetailResponseDto>>($"Product/GetProductList");
+            if (response.IsSuccessStatusCode)
+            {
+                productDetailList = (List<ProductDetailResponseDto>)response.ResultData;
+
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    #endregion
+}

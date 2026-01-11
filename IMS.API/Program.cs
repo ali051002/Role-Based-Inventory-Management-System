@@ -15,6 +15,8 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(b
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 var mapperConfiguration = new MapperConfiguration(configuration =>
 {
