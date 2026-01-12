@@ -4,10 +4,14 @@ using IMS.Web.Mappings;
 using IMS.Web.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging.Abstractions;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRadzenComponents();
+
 builder.Services.AddScoped<ClientApiService>();
+builder.Services.AddScoped<DialogService>();
 
 
 // Add services to the container.

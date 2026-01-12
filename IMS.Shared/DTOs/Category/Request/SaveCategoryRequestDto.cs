@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IMS.Shared.DTOs.Category.Request
 {
-    public class SaveCategoryResponseDto
+    public class SaveCategoryRequestDto
     {
         public Guid? Id { get; set; }
         public string Name { get; set; } = null!;

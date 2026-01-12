@@ -41,7 +41,7 @@ namespace IMS.Infrastructure.Repository
             }
         }
 
-        public async Task SaveCategory(SaveCategoryResponseDto request)
+        public async Task SaveCategory(SaveCategoryRequestDto request)
         {
             try
             {

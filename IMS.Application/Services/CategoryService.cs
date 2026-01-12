@@ -38,7 +38,7 @@ namespace IMS.Application.Services
             }
         }
 
-        public Task SaveCategory(SaveCategoryResponseDto request)
+        public Task SaveCategory(SaveCategoryRequestDto request)
         {
             try
             {

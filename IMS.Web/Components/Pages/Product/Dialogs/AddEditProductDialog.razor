@@ -1,0 +1,124 @@
+﻿@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+@using IMS.Shared.DTOs.Product.Request
+@using IMS.Shared.DTOs.Product.Response
+
+
+<RadzenTemplateForm TItem="SaveProductRequestDto" Data="@Product" Submit="Save">
+    <div class="row">
+        <div class="col-xl-12 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Product Code" />
+            <RadzenTextBox class="form-control" Trim Name="ProductCode" Placeholder="Product Code" @bind-Value="Product.ProductCode" />
+            <RadzenRequiredValidator Component="ProductCode" Text="Required Field" />
+            <RadzenLengthValidator Max="10" Component="ProductCode" Text="Only 10 Characters Allowed" />
+        </div>
+
+        <div class="col-xl-12 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Name" />
+            <RadzenTextBox class="form-control" Trim Name="Name" Placeholder="Name" @bind-Value="Product.Name" />
+            <RadzenRequiredValidator Component="Name" Text="Required Field" />
+            <RadzenLengthValidator Max="50" Component="Name" Text="Only 50 Characters Allowed" />
+        </div>
+        <div class="col-xl-12 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Unit Price" />
+            <RadzenNumeric class="form-control" Name="Price" TValue="decimal" Format="#.00" ShowUpDown="true" Placeholder="Price" @bind-Value="Product.UnitPrice" />
+            <RadzenRequiredValidator Component="Price" Text="Required Field" />
+        </div>
+        <div class="col-xl-12 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Current Stock" />
+            <RadzenNumeric class="form-control" Name="stock" TValue="int" ShowUpDown="true" Placeholder="Current Stock" @bind-Value="Product.CurrentStock" />
+            <RadzenRequiredValidator Component="stock" Text="Required Field" />
+        </div>
+
+        <div class="col-xl-12 mb-2">
+            <div class="form-check form-check-lg p-0">
+                <p class="form-label">Is Active</p>
+                <RadzenSwitch class="form-check-input ms-2" @bind-Value="@Product.IsActive"></RadzenSwitch>
+            </div>
+        </div>
+
+    </div>
+    <div class="row text-end mt-2">
+        <div class="col-12">
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Close" Click="@(() => dialogService.Close())" class="btn btn-light" />
+            <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Submit" ButtonType="ButtonType.Submit" />
+        </div>
+    </div>
+</RadzenTemplateForm>
+@code {
+    #region Parameters, Variables Declaration
+
+    [Parameter]
+    public Guid? ProductId { get; set; }
+    [Parameter]
+    public Guid CategoryId { get; set; }
+    public ProductDetailResponseDto ProductDetail { get; set; } = new();
+    public SaveProductRequestDto Product { get; set; } = new SaveProductRequestDto();
+    #endregion
+
+    #region Component Load
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductId != null)
+        {
+            var response = await clientApiService.SendGetAsync<ProductDetailResponseDto>($"Product/GetProductById?Id={(Guid)ProductId}");
+            if (response.IsSuccessStatusCode)
+            {
+                ProductDetail = response.ResultData;
+                Product = new SaveProductRequestDto()
+                {
+                    Id = ProductDetail.Id,
+                    Name = ProductDetail.Name,
+                    ProductCode = ProductDetail.ProductCode,
+                    UnitPrice = ProductDetail.UnitPrice,
+                    CurrentStock = ProductDetail.CurrentStock,
+                    CategoryId = ProductDetail.CategoryId,
+                    IsActive = ProductDetail.IsActive,
+                    CreatedDate = ProductDetail.CreatedDate
+                };
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+    }
+
+    #endregion
+
+    #region Dialog Events
+
+    private async Task Save()
+    {
+
+        bool? dialogResponse = await dialogService.Confirm(
+           "Are you sure you want to submit?",
+           "Confirm",
+           new ConfirmOptions()
+           {
+               CancelButtonText = "Cancel",
+               OkButtonText = "OK"
+           });
+        if (dialogResponse == true)
+        {
+            Product.CategoryId = CategoryId;
+            var response = await clientApiService.SendAsync<SaveProductRequestDto, object>(HttpMethod.Post, "Product/SaveProduct", Product, hasReturnData: false);
+            if (response.IsSuccessStatusCode)
+            {
+                dialogService.Close(Product);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+    }
+
+    private void Cancel()
+    {
+        dialogService.Close(null);
+    }
+    #endregion
+}

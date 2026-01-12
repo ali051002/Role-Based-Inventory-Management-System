@@ -13,6 +13,6 @@ namespace IMS.Application.Interfaces.Services
     {
         Task<List<CategoryDetailResponseDto>> GetAllCategories();
         Task<CategoryDetailResponseDto> GetCategoryById(Guid Id);
-        Task SaveCategory(SaveCategoryResponseDto request);
+        Task SaveCategory(SaveCategoryRequestDto request);
     }
 }

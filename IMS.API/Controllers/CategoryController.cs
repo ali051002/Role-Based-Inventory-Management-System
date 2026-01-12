@@ -38,7 +38,7 @@ namespace IMS.API.Controllers
         }
 
         [HttpPost("SaveCategory")]
-        public async Task<IActionResult> SaveCategory(SaveCategoryResponseDto request)
+        public async Task<IActionResult> SaveCategory(SaveCategoryRequestDto request)
         {
             try
             {

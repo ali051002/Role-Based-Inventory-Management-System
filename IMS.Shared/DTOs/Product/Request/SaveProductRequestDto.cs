@@ -12,7 +12,6 @@ namespace IMS.Shared.DTOs.Product.Request
         public string ProductCode { get; set; } = null!;
         public string Name { get; set; } = null!;
         public Guid CategoryId { get; set; }
-        public string CategoryName { get; set; } = null!;
         public decimal UnitPrice { get; set; }
         public int CurrentStock { get; set; }
         public bool IsActive { get; set; }

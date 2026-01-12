@@ -1,11 +1,12 @@
 ﻿@page "/productList/{CategoryName}/{CategoryId}"
 @using IMS.Shared.DTOs.Product.Response
+@using IMS.Web.Components.Pages.Product.Dialogs
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 
 <PageTitle>Products</PageTitle>
 
-<h1>@CategoryName Products</h1>
+<button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditProduct(null,Guid.Parse(CategoryId)))">Add Product</button>
 
 @if (productDetailList == null)
 {
@@ -13,35 +14,10 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Unit Price</th>
-                <th>Current Stock</th>
-                <th>Created Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in productDetailList)
-            {
-                <tr>
-                    <td>@product.ProductCode</td>
-                    <td>@product.Name</td>
-                    <td>@product.CategoryName</td>
-                    <td>@product.UnitPrice</td>
-                    <td>@product.CurrentStock</td>
-                    <td>@product.CreatedDate.ToShortDateString()</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    @* <div class="card">
+    <div class="card">
         <div class="card-header">
             <div class="card-title">
-                Product List
+                <h3>@CategoryName Items</h3>
             </div>
         </div>
         <div class="card-body">
@@ -55,14 +31,13 @@ else
                 <Columns>
                     <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="ProductCode" Title="Code" Width="120px" />
                     <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="Name" Title="Name" Width="120px" />
-                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CategoryName" Title="Category" Width="120px" />
                     <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
                     <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
                     <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
                 </Columns>
             </RadzenDataGrid>
         </div>
-    </div> *@
+    </div>
 }
 
 @code {
@@ -71,7 +46,7 @@ else
     [Parameter]
     public string CategoryName { get; set; }
     private List<ProductDetailResponseDto> productDetailList { get; set; } = new();
-    // protected RadzenDataGrid<ProductDetailResponseDto>? ProductGrid = new RadzenDataGrid<ProductDetailResponseDto>();
+    protected RadzenDataGrid<ProductDetailResponseDto>? ProductGrid = new RadzenDataGrid<ProductDetailResponseDto>();
 
 
     protected override async Task OnInitializedAsync()
@@ -102,4 +77,25 @@ else
         }
     }
     #endregion
+
+    private async Task AddEditProduct(Guid? ProductId, Guid CategoryId)
+    {
+        try
+        {
+            var result = await dialogService.OpenAsync<AddEditProductDialog>((ProductId == null ? "Add Product" : "Edit Product"),
+                new Dictionary<string, object> {
+                    { "ProductId", ProductId },
+                    { "CategoryId", CategoryId }
+                },
+                new DialogOptions() { Width = "30%" });
+            if (result != null)
+            {
+                await LoadData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
 }
