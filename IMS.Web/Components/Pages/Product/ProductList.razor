@@ -5,40 +5,49 @@
 @rendermode InteractiveServer
 
 <PageTitle>Products</PageTitle>
+<div class="container-fluid">
+    <h1>Products</h1>
 
-<button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditProduct(null,Guid.Parse(CategoryId)))">Add Product</button>
+    <button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditProduct(null, Guid.Parse(CategoryId)))">Add Product</button>
 
-@if (productDetailList == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">
-                <h3>@CategoryName Items</h3>
+    @if (productDetailList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3>@CategoryName Items</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <RadzenDataGrid @ref="ProductGrid"
+                                Data="@productDetailList"
+                                TItem="ProductDetailResponseDto"
+                                AllowPaging="true"
+                                PageSize="10"
+                                AllowSorting="true"
+                                EmptyText="No Record Found"
+                                Count="@(productDetailList?.Count ?? 0)"
+                                PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
+                                PageSizeText="Items Per Page"
+                                PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
+                                PagingSummaryFormat=""
+                                ShowPagingSummary="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="ProductCode" Title="Code" Width="120px" />
+                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="Name" Title="Name" Width="120px" />
+                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
+                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
+                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
+                    </Columns>
+                </RadzenDataGrid>
             </div>
         </div>
-        <div class="card-body">
-            <RadzenDataGrid @ref="ProductGrid" 
-                Data="@productDetailList" 
-                TItem="ProductDetailResponseDto" 
-                AllowPaging="true" 
-                PageSize="10" 
-                AllowSorting="true"
-                EmptyText="No Record Found">
-                <Columns>
-                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="ProductCode" Title="Code" Width="120px" />
-                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="Name" Title="Name" Width="120px" />
-                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
-                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
-                    <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
-                </Columns>
-            </RadzenDataGrid>
-        </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     [Parameter]

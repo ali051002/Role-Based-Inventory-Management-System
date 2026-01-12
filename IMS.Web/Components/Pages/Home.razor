@@ -1,7 +1,65 @@
 ﻿@page "/"
+@using IMS.Shared.DTOs.Category.Response
 
 <PageTitle>Home</PageTitle>
 
-<h1>Role Based IMS</h1>
+<div class="container-fluid">
+    <div class="d-flex justify-content-center">
+        <h1>Dashboard</h1>
+    </div>
 
-Welcome.
+    <div class="my-3">
+        <h2>Categories</h2>
+    </div>
+
+    <div class="row my-2">
+        @foreach (var category in CategoryDetailList)
+        {
+            <div class="col-md-3">
+                <div class="card my-3">
+                    <div class="card-header d-flex justify-content-center">
+                        <h3>@category.Name</h3>
+                    </div>
+                    <div class="card-body d-flex justify-content-center">
+                        <p>@category.ProductCount @(category.ProductCount > 1 ? "Products" : "Product")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+@code{
+    private List<CategoryDetailResponseDto> CategoryDetailList { get; set; } = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    #region On Load Grid Data
+    private async Task LoadData()
+    {
+        try
+        {
+            var response = await clientApiService.SendGetAsync<List<CategoryDetailResponseDto>>($"Category/GetCategoryList");
+            if (response.IsSuccessStatusCode)
+            {
+                CategoryDetailList = (List<CategoryDetailResponseDto>)response.ResultData;
+
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    #endregion
+}
