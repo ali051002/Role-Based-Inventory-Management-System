@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IMS.Application.Interfaces.Repositories;
 using IMS.Application.Interfaces.Services;
+using IMS.Shared.DTOs.Category.Request;
 using IMS.Shared.DTOs.Category.Response;
 using IMS.Shared.DTOs.Product.Response;
 using System;
@@ -18,6 +19,30 @@ namespace IMS.Application.Services
             try
             {
                 return await _iCategoryRepository.GetAllCategories();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Task<CategoryDetailResponseDto> GetCategoryById(Guid Id)
+        {
+            try
+            {
+                return _iCategoryRepository.GetCategoryById(Id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Task SaveCategory(SaveCategoryResponseDto request)
+        {
+            try
+            {
+                return _iCategoryRepository.SaveCategory(request);
             }
             catch (Exception ex)
             {

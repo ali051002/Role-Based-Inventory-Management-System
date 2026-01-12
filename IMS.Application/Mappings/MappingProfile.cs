@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using IMS.Domain.Entities;
+using IMS.Shared.DTOs.Category.Response;
 using IMS.Shared.DTOs.Product.Response;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace IMS.Application.Mappings
         public MappingProfile()
         {
              CreateMap<Product, ProductDetailResponseDto>().ReverseMap();
+             CreateMap<Category, CategoryDetailResponseDto>().ReverseMap();
         }
     }
 }
