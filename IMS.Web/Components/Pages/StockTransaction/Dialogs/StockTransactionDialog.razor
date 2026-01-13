@@ -1,0 +1,140 @@
+﻿@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+@using IMS.Shared.DTOs.Category.Response
+@using IMS.Shared.DTOs.Product.Response
+@using IMS.Shared.DTOs.StockTransaction.Request
+
+
+<RadzenTemplateForm TItem="StockTransactionRequestDto" Data="@Request" Submit="Save">
+    <div class="row">
+        <div class="col-xl-6 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Category" />
+            <RadzenDropDown Placeholder="Select" Name="Category" class="form-control" TValue="Guid" Data="CategoryDetailList" TextProperty="Name" ValueProperty="Id" Change="@(args => OnCategoryChange(args))" @bind-Value="selectedCategoryId" />
+            <RadzenRequiredValidator Component="Category" DefaultValue="0" Text="Required Field" />
+        </div>
+
+        <div class="col-xl-6 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Product" />
+            <RadzenDropDown Placeholder="Select" Name="Product" class="form-control" TValue="Guid" Data="productDetailList" TextProperty="Name" ValueProperty="Id" @bind-Value="Request.ProductId" Disabled="selectedCategoryId == Guid.Empty" />
+            <RadzenRequiredValidator Component="Product" DefaultValue="0" Text="Required Field" />
+        </div>
+
+        <div class="col-xl-12 mb-2">
+            <RadzenLabel class="form-label d-block" Text="Quantity" />
+            <RadzenNumeric class="form-control" Name="Quantity" TValue="int" ShowUpDown="true" Placeholder="Current Stock" @bind-Value="Request.Quantity" />
+            <RadzenRequiredValidator Component="Quantity" Text="Required Field" />
+        </div>
+
+    </div>
+    <div class="row text-end mt-2">
+        <div class="col-12">
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Close" Click="@(() => dialogService.Close())" class="btn btn-light" />
+            <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Submit" ButtonType="ButtonType.Submit" />
+        </div>
+    </div>
+</RadzenTemplateForm>
+@code {
+    [Parameter]
+    public string TransactionType { get; set; } = string.Empty;
+
+    public StockTransactionRequestDto Request { get; set; } = new StockTransactionRequestDto();
+    private List<ProductDetailResponseDto> productDetailList { get; set; } = new();
+    private List<CategoryDetailResponseDto> CategoryDetailList { get; set; } = new();
+    public Guid selectedCategoryId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategory();
+    }
+
+    private async Task LoadProduct(Guid CatId)
+    {
+        try
+        {
+            var response = await clientApiService.SendGetAsync<List<ProductDetailResponseDto>>($"Product/GetProductsByCategory?Id={CatId}");
+            if (response.IsSuccessStatusCode)
+            {
+                productDetailList = (List<ProductDetailResponseDto>)response.ResultData;
+
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        try
+        {
+            var response = await clientApiService.SendGetAsync<List<CategoryDetailResponseDto>>($"Category/GetCategoryList");
+            if (response.IsSuccessStatusCode)
+            {
+                CategoryDetailList = (List<CategoryDetailResponseDto>)response.ResultData;
+
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    async void OnCategoryChange(object value)
+    {
+        if (value != null)
+        {
+            await LoadProduct((Guid)value);
+
+            StateHasChanged();
+        }
+    }
+
+
+    #region Dialog Events
+
+    private async Task Save()
+    {
+
+        bool? dialogResponse = await dialogService.Confirm(
+           "Are you sure you want to submit?",
+           "Confirm",
+           new ConfirmOptions()
+           {
+               CancelButtonText = "Cancel",
+               OkButtonText = "OK"
+           });
+        if (dialogResponse == true)
+        {
+            Request.TransactionType = TransactionType;
+            Request.CreatedBy = Guid.NewGuid();
+            var response = await clientApiService.SendAsync<StockTransactionRequestDto, object>(HttpMethod.Post, "Transaction/StockTransaction", Request, hasReturnData: false);
+            if (response.IsSuccessStatusCode)
+            {
+                dialogService.Close(Request);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+    }
+
+    private void Cancel()
+    {
+        dialogService.Close(null);
+    }
+    #endregion
+}

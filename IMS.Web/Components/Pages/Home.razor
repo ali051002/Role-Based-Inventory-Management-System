@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using IMS.Shared.DTOs.Category.Response
 @using IMS.Shared.DTOs.StockTransaction.Response
+@using IMS.Web.Components.Pages.StockTransaction.Dialogs
 
 <PageTitle>Home</PageTitle>
 
@@ -33,11 +34,14 @@
         <h2>Transactions</h2>
     </div>
 
-    <div class="card my-3 mb-3">
+    <button class="btn btn-primary btn-sm my-3 mx-2" type="button" @onclick="@(() => StockTransaction("IN"))">Stock In</button>
+    <button class="btn btn-primary btn-sm my-3 mx-2" type="button" @onclick="@(() => StockTransaction("OUT"))">Stock Out</button>
 
+
+    <div class="card my-3 mb-3">
         <div class="card-body">
             <RadzenDataGrid @ref="TransactionGrid"
-                            Data="@TransactionDetailList"
+                            Data="@TransactionDetailList?.OrderByDescending(x => x.CreatedDate)"
                             TItem="StockTransactionDetailResponseDto"
                             AllowPaging="true"
                             PageSize="10"
@@ -119,4 +123,25 @@
         }
     }
     #endregion
+
+    private async Task StockTransaction(string type)
+    {
+        try
+        {
+            var result = await dialogService.OpenAsync<StockTransactionDialog>((type == "IN" ? "Stock In" : "Stock Out"),
+                new Dictionary<string, object> {
+                    { "TransactionType", type }
+                },
+                new DialogOptions() { Width = "30%" });
+            if (result != null)
+            {
+                await LoadCategories();
+                await LoadTransactions();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
 }

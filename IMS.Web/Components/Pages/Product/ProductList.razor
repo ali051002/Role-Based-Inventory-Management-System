@@ -24,7 +24,7 @@
             </div>
             <div class="card-body">
                 <RadzenDataGrid @ref="ProductGrid"
-                                Data="@productDetailList"
+                                Data="@productDetailList?.OrderByDescending(x => x.CreatedDate)"
                                 TItem="ProductDetailResponseDto"
                                 AllowPaging="true"
                                 PageSize="10"
