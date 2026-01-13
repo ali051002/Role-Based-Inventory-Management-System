@@ -2,6 +2,7 @@
 using IMS.Domain.Entities;
 using IMS.Shared.DTOs.Category.Response;
 using IMS.Shared.DTOs.Product.Response;
+using IMS.Shared.DTOs.StockTransaction.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace IMS.Application.Mappings
         {
              CreateMap<Product, ProductDetailResponseDto>().ReverseMap();
              CreateMap<Category, CategoryDetailResponseDto>().ReverseMap();
+             CreateMap<StockTransaction, StockTransactionDetailResponseDto>().ReverseMap();
         }
     }
 }

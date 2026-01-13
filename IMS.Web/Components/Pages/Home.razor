@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using IMS.Shared.DTOs.Category.Response
+@using IMS.Shared.DTOs.StockTransaction.Response
 
 <PageTitle>Home</PageTitle>
 
@@ -28,19 +29,53 @@
         }
     </div>
 
+    <div class="my-3">
+        <h2>Transactions</h2>
+    </div>
+
+    <div class="card my-3 mb-3">
+
+        <div class="card-body">
+            <RadzenDataGrid @ref="TransactionGrid"
+                            Data="@TransactionDetailList"
+                            TItem="StockTransactionDetailResponseDto"
+                            AllowPaging="true"
+                            PageSize="10"
+                            AllowSorting="true"
+                            EmptyText="No Record Found"
+                            Count="@(TransactionDetailList?.Count ?? 0)"
+                            PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
+                            PageSizeText="Items Per Page"
+                            PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
+                            PagingSummaryFormat=""
+                            ShowPagingSummary="true">
+                <Columns>
+                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="TransactionType" Title="Type" Width="120px" />
+                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="ProductName" Title="Product Name" Width="120px" />
+                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="Quantity" Title="Quantity" Width="120px" />
+                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedBy" Title="Created By" Width="120px" />
+                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedDate" Title="Transaction Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    </div>
+
 </div>
 
 @code{
     private List<CategoryDetailResponseDto> CategoryDetailList { get; set; } = new();
+    private List<StockTransactionDetailResponseDto> TransactionDetailList { get; set; } = new();
+    protected RadzenDataGrid<StockTransactionDetailResponseDto>? TransactionGrid = new RadzenDataGrid<StockTransactionDetailResponseDto>();
 
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        await LoadCategories();
+        await LoadTransactions();
     }
 
     #region On Load Grid Data
-    private async Task LoadData()
+    private async Task LoadCategories()
     {
         try
         {
@@ -48,6 +83,28 @@
             if (response.IsSuccessStatusCode)
             {
                 CategoryDetailList = (List<CategoryDetailResponseDto>)response.ResultData;
+
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                Console.WriteLine("Error While Calling API");
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    private async Task LoadTransactions()
+    {
+        try
+        {
+            var response = await clientApiService.SendGetAsync<List<StockTransactionDetailResponseDto>>($"Transaction/GetTransactionList");
+            if (response.IsSuccessStatusCode)
+            {
+                TransactionDetailList = (List<StockTransactionDetailResponseDto>)response.ResultData;
 
                 await InvokeAsync(StateHasChanged);
             }

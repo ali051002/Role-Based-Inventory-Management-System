@@ -47,6 +47,7 @@
                         <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="120px" >
                             <Template Context="item">
                                 <div class="justify-content-center">
+                                    <button class="btn btn-primary btn-sm" type="button" @onclick="@(() => AddEditCategory(item.Id))">Edit</button>
                                     <button class="btn btn-primary btn-sm" type="button" @onclick="@(() => navigationManager.NavigateTo($"/productList/{@item.Name}/{item.Id}"))">View Products</button>
                                 </div>
                             </Template>
