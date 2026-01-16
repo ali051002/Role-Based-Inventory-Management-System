@@ -119,7 +119,7 @@
         if (dialogResponse == true)
         {
             Request.TransactionType = TransactionType;
-            Request.CreatedBy = Guid.NewGuid();
+            Request.CreatedBy = loginState.UserName;
             var response = await clientApiService.SendAsync<StockTransactionRequestDto, object>(HttpMethod.Post, "Transaction/StockTransaction", Request, hasReturnData: false);
             if (response.IsSuccessStatusCode)
             {

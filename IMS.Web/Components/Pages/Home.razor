@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/home"
 @using IMS.Shared.DTOs.Category.Response
 @using IMS.Shared.DTOs.StockTransaction.Response
 @using IMS.Web.Components.Pages.StockTransaction.Dialogs
@@ -34,39 +34,44 @@
         <h2>Transactions</h2>
     </div>
 
-    <button class="btn btn-primary btn-sm my-3 mx-2" type="button" @onclick="@(() => StockTransaction("IN"))">Stock In</button>
+    @if (loginState.Role == "admin")
+    {
+        <button class="btn btn-primary btn-sm my-3 mx-2" type="button" @onclick="@(() => StockTransaction("IN"))">Stock In</button>
+    }
     <button class="btn btn-primary btn-sm my-3 mx-2" type="button" @onclick="@(() => StockTransaction("OUT"))">Stock Out</button>
 
-
-    <div class="card my-3 mb-3">
-        <div class="card-body">
-            <RadzenDataGrid @ref="TransactionGrid"
-                            Data="@TransactionDetailList?.OrderByDescending(x => x.CreatedDate)"
-                            TItem="StockTransactionDetailResponseDto"
-                            AllowPaging="true"
-                            PageSize="10"
-                            AllowSorting="true"
-                            EmptyText="No Record Found"
-                            Count="@(TransactionDetailList?.Count ?? 0)"
-                            PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
-                            PageSizeText="Items Per Page"
-                            PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
-                            PagingSummaryFormat=""
-                            ShowPagingSummary="true">
-                <Columns>
-                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="TransactionType" Title="Type" Width="120px" />
-                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="ProductName" Title="Product Name" Width="120px" />
-                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="Quantity" Title="Quantity" Width="120px" />
-                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedBy" Title="Created By" Width="120px" />
-                    <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedDate" Title="Transaction Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
-                </Columns>
-            </RadzenDataGrid>
+    @if (loginState.Role == "admin")
+    {
+        <div class="card my-3 mb-3">
+            <div class="card-body">
+                <RadzenDataGrid @ref="TransactionGrid"
+                                Data="@TransactionDetailList?.OrderByDescending(x => x.CreatedDate)"
+                                TItem="StockTransactionDetailResponseDto"
+                                AllowPaging="true"
+                                PageSize="10"
+                                AllowSorting="true"
+                                EmptyText="No Record Found"
+                                Count="@(TransactionDetailList?.Count ?? 0)"
+                                PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
+                                PageSizeText="Items Per Page"
+                                PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
+                                PagingSummaryFormat=""
+                                ShowPagingSummary="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="TransactionType" Title="Type" Width="120px" />
+                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="ProductName" Title="Product Name" Width="120px" />
+                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="Quantity" Title="Quantity" Width="120px" />
+                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedBy" Title="Created By" Width="120px" />
+                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedDate" Title="Transaction Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </div>
         </div>
-    </div>
+    }
 
 </div>
 
-@code{
+@code {
     private List<CategoryDetailResponseDto> CategoryDetailList { get; set; } = new();
     private List<StockTransactionDetailResponseDto> TransactionDetailList { get; set; } = new();
     protected RadzenDataGrid<StockTransactionDetailResponseDto>? TransactionGrid = new RadzenDataGrid<StockTransactionDetailResponseDto>();

@@ -1,0 +1,45 @@
+﻿.container {
+    width: 28%;
+    border-radius: 10px;
+    background-color: #eaeaea;
+    padding: 50px;
+    box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin-top: 50px;
+}
+
+h2 {
+    text-align: center;
+    font-weight: bold;
+}
+
+input[type=text], input[type=password] {
+    padding: 5px;
+    width: 20rem;
+    border-radius: 3px;
+    border: 1px solid #ffffff;
+    border-bottom-color: gray;
+    padding-left: 20px;
+}
+
+input[placeholder] {
+    font-size: smaller;
+}
+
+label {
+    padding: 20px 12px 3px 0;
+    font-weight: bold;
+}
+
+a {
+    font-size: smaller;
+}
+
+a {
+    display: inline-block;
+    transition: transform .2s;
+    cursor: pointer;
+}
+
+    a:hover {
+        transform: scale(1.02);
+    }

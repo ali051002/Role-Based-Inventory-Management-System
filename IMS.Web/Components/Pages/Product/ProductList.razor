@@ -7,9 +7,10 @@
 <PageTitle>Products</PageTitle>
 <div class="container-fluid">
     <h1>Products</h1>
-
-    <button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditProduct(null, Guid.Parse(CategoryId)))">Add Product</button>
-
+    @if (loginState.Role == "admin")
+    {
+        <button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditProduct(null, Guid.Parse(CategoryId)))">Add Product</button>
+    }
     @if (productDetailList == null)
     {
         <p><em>Loading...</em></p>
@@ -42,13 +43,21 @@
                         <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
                         <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
                         <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
-                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="120px">
-                            <Template Context="item">
-                                <div class="justify-content-center">
-                                    <button class="btn btn-primary btn-sm" type="button" @onclick="@(() => AddEditProduct(item.Id, Guid.Parse(CategoryId)))">Edit</button>
-                                </div>
-                            </Template>
-                        </RadzenDataGridColumn>
+                        @if (loginState.Role == "admin")
+                        {
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="60px">
+                                <Template Context="item">
+                                    <div class="justify-content-center">
+                                        <a aria-label="anchor"
+                                           @onclick="@(() => AddEditProduct(item.Id, Guid.Parse(CategoryId)))"
+                                           title="Edit"
+                                           class="btn btn-primary btn-sm me-2">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </Template>
+                            </RadzenDataGridColumn>
+                        }
                     </Columns>
                 </RadzenDataGrid>
             </div>

@@ -12,6 +12,6 @@ namespace IMS.Shared.DTOs.StockTransaction.Request
         public int Quantity { get; set; }
         public string TransactionType { get; set; } = null!;
         public string? Reference { get; set; }
-        public Guid CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
     }
 }

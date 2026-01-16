@@ -1,11 +1,13 @@
 ﻿using IMS.Application.Interfaces.Services;
 using IMS.Application.Services;
 using IMS.Shared.DTOs.StockTransaction.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IMS.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TransactionController(ITransactionService _iTransactionService) : ControllerBase

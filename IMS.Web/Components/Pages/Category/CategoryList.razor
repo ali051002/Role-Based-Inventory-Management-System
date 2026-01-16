@@ -10,11 +10,11 @@
 <div class="container-fluid">
     <h1>Categories</h1>
 
-    <button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditCategory(null))">Add Category</button>
-    @* <RadzenButton class="btn btn-primary btn-sm my-3" Click="@(() => AddEditCategory(null))">
-        Add Category
-    </RadzenButton> *@
+    @if (loginState.Role == "admin")
+    {
 
+        <button class="btn btn-primary btn-sm my-3" type="button" @onclick="@(() => AddEditCategory(null))">Add Category</button>
+    }
     @if (CategoryDetailList == null)
     {
         <p><em>Loading...</em></p>
@@ -44,11 +44,24 @@
                     <Columns>
                         <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Property="Name" Title="Name" Width="120px" />
                         <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Property="ProductCount" Title="Total Products" Width="120px" />
-                        <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="120px" >
+                        <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="60px">
                             <Template Context="item">
                                 <div class="justify-content-center">
-                                    <button class="btn btn-primary btn-sm" type="button" @onclick="@(() => AddEditCategory(item.Id))">Edit</button>
-                                    <button class="btn btn-primary btn-sm" type="button" @onclick="@(() => navigationManager.NavigateTo($"/productList/{@item.Name}/{item.Id}"))">View Products</button>
+                                    @if (loginState.Role == "admin")
+                                    {
+                                        <a aria-label="anchor"
+                                           @onclick="@(() => AddEditCategory(item.Id))"
+                                           title="Edit"
+                                           class="btn btn-primary btn-sm me-2">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    }
+                                    <a aria-label="anchor"
+                                       @onclick="@(() => navigationManager.NavigateTo($"/productList/{@item.Name}/{item.Id}"))"
+                                       title="View Products"
+                                       class="btn btn-primary btn-sm me-2">
+                                        <i class="bi bi-diagram-2"></i>
+                                    </a>
                                 </div>
                             </Template>
                         </RadzenDataGridColumn>
@@ -62,7 +75,6 @@
 @code {
     private List<CategoryDetailResponseDto> CategoryDetailList { get; set; } = new();
     protected RadzenDataGrid<CategoryDetailResponseDto>? CategoryGrid = new RadzenDataGrid<CategoryDetailResponseDto>();
-
 
     protected override async Task OnInitializedAsync()
     {

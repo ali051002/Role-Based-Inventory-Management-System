@@ -1,0 +1,13 @@
+﻿@inject NavigationManager NavigationManager
+@page "/unauthorized"
+
+<h3>Unauthorized Access</h3>
+
+<button type="button" class="btn btn-primary" @onclick="ReturnToLogin">Return to Login</button>
+
+@code {
+    private void ReturnToLogin()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

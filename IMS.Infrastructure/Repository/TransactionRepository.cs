@@ -29,6 +29,7 @@ namespace IMS.Infrastructure.Repository
                                 ProductName = p.Name,
                                 Quantity = s.Quantity,
                                 CreatedDate = s.CreatedDate,
+                                CreatedBy = s.CreatedBy,
                                 TransactionType = s.TransactionType
                             };
                 return await query.AsNoTracking().ToListAsync();

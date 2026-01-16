@@ -1,5 +1,6 @@
 using AutoMapper;
 using IMS.Web.Components;
+using IMS.Web.Helpers;
 using IMS.Web.Mappings;
 using IMS.Web.Services;
 using Microsoft.AspNetCore.Http.Features;
@@ -12,6 +13,7 @@ builder.Services.AddRadzenComponents();
 
 builder.Services.AddScoped<ClientApiService>();
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<LoginState>();
 
 
 // Add services to the container.

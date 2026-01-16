@@ -1,6 +1,37 @@
-@IMS.API_HostAddress = http://localhost:5041
+@IMS.API_HostAddress = https://localhost:7010
 
 GET {{IMS.API_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+GET {{IMS.API_HostAddress}}/api/category/GetCategoryById
+Authorization: {{$apiKey}}
+
+###
+
+GET {{IMS.API_HostAddress}}/api/category/GetCategoryList
+Authorization: Bearer 
+
+###
+
+POST {{IMS.API_HostAddress}}/api/auth/login
+Authorization: {{$apiKey}}
+Content-Type: application/json
+
+{
+  "email": "ali@mail.com",
+  "password": "Pass@123456"
+}
+
+###
+
+POST {{IMS.API_HostAddress}}/api/auth/register
+Authorization: {{$apiKey}}
+Content-Type: application/json
+
+{
+  //SignUpRequestDto
+}
 
 ###

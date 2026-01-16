@@ -1,4 +1,5 @@
 ﻿using IMS.Shared.DTOs;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Net;
 using System.Net.Http.Headers;
@@ -13,15 +14,17 @@ namespace IMS.Web.Services
         private readonly IConfiguration _config;
         private readonly ProtectedLocalStorage _localStorage;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly NavigationManager _navigationManager;
         #endregion
 
         #region Constructor
 
-        public ClientApiService(IConfiguration config, ProtectedLocalStorage localStorage, IHttpClientFactory httpClientFactory)
+        public ClientApiService(IConfiguration config, ProtectedLocalStorage localStorage, IHttpClientFactory httpClientFactory, NavigationManager navigationManager)
         {
             _config = config;
             _localStorage = localStorage;
             _httpClientFactory = httpClientFactory;
+            _navigationManager = navigationManager;
         }
         #endregion
 
@@ -44,8 +47,8 @@ namespace IMS.Web.Services
                     Content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json")
                 };
 
-                //var token = await _localStorage.GetAsync<string>("Token");
-                //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+                var token = await _localStorage.GetAsync<string>("AccessToken");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 
                 var response = await client.SendAsync(request);
 
@@ -58,6 +61,12 @@ namespace IMS.Web.Services
                     }
 
                     return new ApiResponse { StatusCode = response.StatusCode, IsSuccessStatusCode = true, ResultData = resultData };
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _navigationManager.NavigateTo("/unauthorized");
+                    return new ApiResponse { StatusCode = response.StatusCode, IsSuccessStatusCode = false };
+
                 }
                 else
                 {
@@ -80,9 +89,8 @@ namespace IMS.Web.Services
                 var client = GetClient("IMS");
                 var request = new HttpRequestMessage(HttpMethod.Get, endpointWithQuery);
 
-                //var token = await _localStorage.GetAsync<string>("Token");
-                //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-
+                var token = await _localStorage.GetAsync<string>("AccessToken");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 
                 var response = await client.SendAsync(request);
 
@@ -95,6 +103,12 @@ namespace IMS.Web.Services
                     }
 
                     return new ApiResponse { StatusCode = response.StatusCode, IsSuccessStatusCode = true, ResultData = resultData };
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _navigationManager.NavigateTo("/unauthorized");
+                    return new ApiResponse { StatusCode = response.StatusCode, IsSuccessStatusCode = false };
+
                 }
                 else
                 {

@@ -1,0 +1,60 @@
+﻿@page "/"
+
+<PageTitle>Login</PageTitle>
+
+<div class="login-page">
+    <div class="d-flex justify-content-center mt-5">
+        <h1>Inventory Management System</h1>
+    </div>
+
+    <div class="container">
+        <h2 class="mb-2">LOGIN</h2>
+
+        <EditForm Model="_LoginModel" OnValidSubmit="Submit" OnInvalidSubmit="InvalidSubmit" FormName="LoginForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="row">
+                <p class="text-danger">@inValidMessage</p>
+            </div>
+
+            <div class="row">
+                <label for="email">Email</label><br />
+                <input type="text" id="uname" @bind-value="_LoginModel.Email" placeholder="Type your email" /><br />
+                <ValidationMessage For="@(() => _LoginModel.Email)" />
+            </div>
+
+            <div class="row">
+                <label for="password">Password</label><br />
+                <input type="@inputType" id="pass" @bind-value="_LoginModel.Password" placeholder="Type your password" /><br />
+                <ValidationMessage For="@(() => _LoginModel.Password)" />
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-2">
+                    <input type="checkbox" @onclick="ToggleShowPassword" />
+                </div>
+                <div class="col-10">
+                    <div class="d-flex align-content-center">
+                        <span class="small">Show Password</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary w-75" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span>Login</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>

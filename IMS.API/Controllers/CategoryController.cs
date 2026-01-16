@@ -1,10 +1,12 @@
 ﻿using IMS.Application.Interfaces.Services;
 using IMS.Shared.DTOs.Category.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IMS.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController(ICategoryService _iCategoryService) : ControllerBase
@@ -37,6 +39,7 @@ namespace IMS.API.Controllers
             }
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("SaveCategory")]
         public async Task<IActionResult> SaveCategory(SaveCategoryRequestDto request)
         {

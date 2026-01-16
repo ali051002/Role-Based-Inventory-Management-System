@@ -1,10 +1,12 @@
 ﻿using IMS.Application.Interfaces.Services;
 using IMS.Shared.DTOs.Product.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IMS.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController(IProductService _iProductService) : ControllerBase
@@ -37,6 +39,7 @@ namespace IMS.API.Controllers
             }
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("SaveProduct")]
         public async Task<IActionResult> SaveProduct(SaveProductRequestDto request)
         {

@@ -1,6 +1,8 @@
 ﻿using IMS.Domain.Entities;
 using IMS.Shared.DTOs.Category.Response;
 using IMS.Shared.DTOs.Product.Response;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace IMS.Infrastructure.DbContext
 {
-    public class DatabaseContext : Microsoft.EntityFrameworkCore.DbContext
+    public class DatabaseContext : IdentityDbContext<User, AspNetRoles, Guid>
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
     : base(options)
@@ -26,6 +28,9 @@ namespace IMS.Infrastructure.DbContext
 
 
         #region Models
+        public DbSet<User> User { get; set; } = null!;
+        public DbSet<AspNetRoles> Roles { get; set; } = null!;
+
         // Inventory
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
@@ -48,6 +53,16 @@ namespace IMS.Infrastructure.DbContext
             //// UserRoles (Composite Key)
             //modelBuilder.Entity<UserRole>()
             //    .HasKey(ur => new { ur.UserId, ur.RoleId });
+
+            modelBuilder.Entity<User>(b =>
+            {
+                b.ToTable("User");
+
+                b.Property(u => u.RefreshToken)
+                 .HasColumnName("RefreshToken")
+                 .HasColumnType("nvarchar(max)")
+                 .IsRequired(false);
+            });
 
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.ProductCode)

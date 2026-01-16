@@ -1,16 +1,43 @@
 ﻿@inherits LayoutComponentBase
 
 <RadzenComponents @rendermode="@RenderMode.InteractiveServer" />
-<RadzenDialog/>
+<RadzenDialog />
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    @if (navigationManager.Uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) || navigationManager.Uri.EndsWith("/unauthorized", StringComparison.OrdinalIgnoreCase))
+    {
+    }
+    else
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+
+
+        @if (navigationManager.Uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) || navigationManager.Uri.EndsWith("/unauthorized", StringComparison.OrdinalIgnoreCase))
+        {
+        }
+        else
+        {
+            <div class="top-row px-4">
+                <div class="d-flex align-items-center px-4">
+                    <div class="me-sm-2 me-0">
+                        <span class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                            @(loginState.UserName != null ? loginState.UserName[0] : "X")
+                        </span>
+                    </div>
+                    <div class="d-sm-block d-none">
+                        <p class="fw-semibold lh-1" style="margin-bottom: 2px">@loginState.UserName</p>
+                        <span class="op-7 fw-normal d-block" style="font-size : x-small">@(loginState.Role != null ? loginState.Role.ToUpper() : "")</span>
+                    </div>
+                </div>
+                <div class="border-start" style="border-color: gray">
+                    <a class ="fw-bold" @onclick =@(() => Logout()) target="_blank">Log Out</a>
+                </div>
+            </div>
+        }
 
         <article class="content px-4">
             @Body
@@ -23,3 +50,26 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private bool _initialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initialized)
+        {
+            _initialized = true;
+            await loginState.InitializeAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Logout()
+    {
+        loginState.SetLogout();
+
+        Console.WriteLine("Logout successful.");
+        navigationManager.NavigateTo("/", true);
+        return;
+    }
+}

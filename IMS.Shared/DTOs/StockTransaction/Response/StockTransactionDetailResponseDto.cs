@@ -13,7 +13,7 @@ namespace IMS.Shared.DTOs.StockTransaction.Response
         public string? ProductName { get; set; }
         public int Quantity { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string? CreatedBy { get; set; } = "Admin";
+        public string CreatedBy { get; set; }
         public string TransactionType { get; set; } = null!;
     }
 }
