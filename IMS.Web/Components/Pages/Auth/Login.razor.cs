@@ -1,6 +1,7 @@
 ﻿using IMS.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Radzen;
 using System.Text;
 using System.Text.Json;
 
@@ -60,6 +61,15 @@ namespace IMS.Web.Components.Pages.Auth
             }
             catch (Exception ex)
             {
+                var message = new NotificationMessage
+                {
+                    Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = "Something went wrong.",
+                    Duration = 4000
+                };
+                notificationService.Notify(message);
                 throw new Exception($"Error Logging In : {ex.Message}");
             }
             finally

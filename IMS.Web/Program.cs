@@ -13,6 +13,7 @@ builder.Services.AddRadzenComponents();
 
 builder.Services.AddScoped<ClientApiService>();
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<LoginState>();
 
 

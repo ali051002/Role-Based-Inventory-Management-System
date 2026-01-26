@@ -94,10 +94,28 @@
             else
             {
                 Console.WriteLine("Error While Calling API");
+                var message = new NotificationMessage
+                {
+                    Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = "Something went wrong.",
+                    Duration = 4000
+                };
+                notificationService.Notify(message);
             }
         }
         catch (Exception)
         {
+            var message = new NotificationMessage
+            {
+                Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = "Something went wrong.",
+                Duration = 4000
+            };
+            notificationService.Notify(message);
             throw;
         }
     }
@@ -121,6 +139,15 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+            var message = new NotificationMessage
+            {
+                Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = "Something went wrong.",
+                Duration = 4000
+            };
+            notificationService.Notify(message);
         }
     }
 }

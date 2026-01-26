@@ -62,10 +62,28 @@
             else
             {
                 Console.WriteLine("Error While Calling API");
+                var message = new NotificationMessage
+                {
+                    Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = "Something went wrong.",
+                    Duration = 4000
+                };
+                notificationService.Notify(message);
             }
         }
         catch (Exception)
         {
+            var message = new NotificationMessage
+            {
+                Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = "Something went wrong.",
+                Duration = 4000
+            };
+            notificationService.Notify(message);
             throw;
         }
     }
@@ -84,10 +102,28 @@
             else
             {
                 Console.WriteLine("Error While Calling API");
+                var message = new NotificationMessage
+                {
+                    Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = "Something went wrong.",
+                    Duration = 4000
+                };
+                notificationService.Notify(message);
             }
         }
         catch (Exception)
         {
+            var message = new NotificationMessage
+            {
+                Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = "Something went wrong.",
+                Duration = 4000
+            };
+            notificationService.Notify(message);
             throw;
         }
     }
@@ -124,10 +160,28 @@
             if (response.IsSuccessStatusCode)
             {
                 dialogService.Close(Request);
+                var message = new NotificationMessage
+                {
+                    Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = Request.TransactionType == "IN" ? "Stock In Transaction Successfull." : "Stock Out Transaction Successfull.",
+                    Duration = 4000
+                };
+                notificationService.Notify(message);
             }
             else
             {
                 Console.WriteLine("Error While Calling API");
+                var message = new NotificationMessage
+                {
+                    Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = "Something went wrong.",
+                    Duration = 4000
+                };
+                notificationService.Notify(message);
             }
         }
     }
