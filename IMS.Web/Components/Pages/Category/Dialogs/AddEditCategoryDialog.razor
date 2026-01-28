@@ -8,7 +8,7 @@
 <RadzenTemplateForm TItem="SaveCategoryRequestDto" Data="@Category" Submit="Save">
     <div class="row">
         <div class="col-xl-12 mb-2">
-            <RadzenLabel class="form-label d-block" Text="Name" />
+            <RadzenLabel class="form-label d-block" Text="Name *" />
             <RadzenTextBox class="form-control" Trim Name="Name" Placeholder="Name" @bind-Value="Category.Name" />
             <RadzenRequiredValidator Component="Name" Text="Required Field" />
             <RadzenLengthValidator Max="50" Component="Name" Text="Only 50 Characters Allowed" />

@@ -8,25 +8,25 @@
 <RadzenTemplateForm TItem="SaveProductRequestDto" Data="@Product" Submit="Save">
     <div class="row">
         <div class="col-xl-12 mb-2">
-            <RadzenLabel class="form-label d-block" Text="Product Code" />
+            <RadzenLabel class="form-label d-block" Text="Product Code *" />
             <RadzenTextBox class="form-control" Trim Name="ProductCode" Placeholder="Product Code" @bind-Value="Product.ProductCode" />
             <RadzenRequiredValidator Component="ProductCode" Text="Required Field" />
             <RadzenLengthValidator Max="10" Component="ProductCode" Text="Only 10 Characters Allowed" />
         </div>
 
         <div class="col-xl-12 mb-2">
-            <RadzenLabel class="form-label d-block" Text="Name" />
+            <RadzenLabel class="form-label d-block" Text="Name *" />
             <RadzenTextBox class="form-control" Trim Name="Name" Placeholder="Name" @bind-Value="Product.Name" />
             <RadzenRequiredValidator Component="Name" Text="Required Field" />
             <RadzenLengthValidator Max="50" Component="Name" Text="Only 50 Characters Allowed" />
         </div>
         <div class="col-xl-12 mb-2">
-            <RadzenLabel class="form-label d-block" Text="Unit Price" />
+            <RadzenLabel class="form-label d-block" Text="Unit Price *" />
             <RadzenNumeric class="form-control" Name="Price" TValue="decimal" Format="#.00" ShowUpDown="true" Placeholder="Price" @bind-Value="Product.UnitPrice" />
             <RadzenRequiredValidator Component="Price" Text="Required Field" />
         </div>
         <div class="col-xl-12 mb-2">
-            <RadzenLabel class="form-label d-block" Text="Current Stock" />
+            <RadzenLabel class="form-label d-block" Text="Current Stock *" />
             <RadzenNumeric class="form-control" Name="stock" TValue="int" ShowUpDown="true" Placeholder="Current Stock" @bind-Value="Product.CurrentStock" />
             <RadzenRequiredValidator Component="stock" Text="Required Field" />
         </div>

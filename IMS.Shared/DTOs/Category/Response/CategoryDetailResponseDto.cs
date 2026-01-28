@@ -12,5 +12,6 @@ namespace IMS.Shared.DTOs.Category.Response
         public string Name { get; set; } = null!;
         public bool IsActive { get; set; }
         public int ProductCount { get; set; }
+        public int OutOfStockProducts { get; set; }
     }
 }
