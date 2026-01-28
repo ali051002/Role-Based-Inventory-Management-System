@@ -14,5 +14,7 @@ namespace IMS.Application.Interfaces.Services
         Task<List<CategoryDetailResponseDto>> GetAllCategories();
         Task<CategoryDetailResponseDto> GetCategoryById(Guid Id);
         Task SaveCategory(SaveCategoryRequestDto request);
+        Task DeleteCategory(Guid Id);
+
     }
 }

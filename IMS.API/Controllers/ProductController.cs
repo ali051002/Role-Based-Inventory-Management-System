@@ -67,5 +67,20 @@ namespace IMS.API.Controllers
                 return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
             }
         }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("DeleteProduct/{Id}")]
+        public async Task<IActionResult> DeleteProduct(Guid Id)
+        {
+            try
+            {
+                await _iProductService.DeleteProduct(Id);
+                return Ok(new { Message = "Product deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
+            }
+        }
     }
 }

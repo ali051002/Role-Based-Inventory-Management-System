@@ -13,6 +13,17 @@ namespace IMS.Application.Services
 {
     public class ProductService(IProductRepository _iProductRepository, IMapper _mapper) : IProductService
     {
+        public async Task DeleteProduct(Guid Id)
+        {
+            try
+            {
+                await _iProductRepository.DeleteProduct(Id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task<List<ProductDetailResponseDto>> GetAllProducts()
         {
             try

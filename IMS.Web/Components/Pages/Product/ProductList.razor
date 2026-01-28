@@ -24,42 +24,65 @@
                 </div>
             </div>
             <div class="card-body">
-                <RadzenDataGrid @ref="ProductGrid"
-                                Data="@productDetailList?.OrderByDescending(x => x.CreatedDate)"
-                                TItem="ProductDetailResponseDto"
-                                AllowPaging="true"
-                                PageSize="10"
-                                AllowSorting="true"
-                                EmptyText="No Record Found"
-                                Count="@(productDetailList?.Count ?? 0)"
-                                PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
-                                PageSizeText="Items Per Page"
-                                PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
-                                PagingSummaryFormat=""
-                                ShowPagingSummary="true">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="ProductCode" Title="Code" Width="120px" />
-                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="Name" Title="Name" Width="120px" />
-                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
-                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
-                        <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
-                        @if (loginState.Role == "admin")
-                        {
-                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="60px">
+                <div class="table-responsive">
+                    <RadzenDataGrid @ref="ProductGrid"
+                                    Data="@productDetailList?.OrderByDescending(x => x.CreatedDate)"
+                                    TItem="ProductDetailResponseDto"
+                                    AllowPaging="true"
+                                    PageSize="10"
+                                    AllowSorting="true"
+                                    EmptyText="No Record Found"
+                                    Count="@(productDetailList?.Count ?? 0)"
+                                    PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
+                                    PageSizeText="Items Per Page"
+                                    PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
+                                    PagingSummaryFormat=""
+                                    ShowPagingSummary="true">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="ProductCode" Title="Code" Width="120px" />
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="Name" Title="Name" Width="120px" />
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="UnitPrice" Title="Unit Price" Width="120px" />
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CurrentStock" Title="Current Stock" Width="120px" />
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Title="Status" CssClass="text-center" Sortable="false" Width="60px">
                                 <Template Context="item">
-                                    <div class="justify-content-center">
-                                        <a aria-label="anchor"
-                                           @onclick="@(() => AddEditProduct(item.Id, Guid.Parse(CategoryId)))"
-                                           title="Edit"
-                                           class="btn btn-primary btn-sm me-2">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    </div>
+                                    @if (item.IsActive)
+                                    {
+                                        <p class="text-center mb-0 fw-bold text-primary">Active</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center mb-0 fw-bold text-danger">In Active</p>
+                                    }
                                 </Template>
                             </RadzenDataGridColumn>
-                        }
-                    </Columns>
-                </RadzenDataGrid>
+                            <RadzenDataGridColumn TItem="ProductDetailResponseDto" Property="CreatedDate" Title="Created Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
+                            @if (loginState.Role == "admin")
+                            {
+                                <RadzenDataGridColumn TItem="ProductDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="60px">
+                                    <Template Context="item">
+                                        <div class="justify-content-center">
+                                            <a aria-label="anchor"
+                                               @onclick="@(() => AddEditProduct(item.Id, Guid.Parse(CategoryId)))"
+                                               title="Edit"
+                                               class="btn btn-primary btn-sm me-2">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            @if (loginState.Role == "admin")
+                                            {
+                                                <a aria-label="anchor"
+                                                   @onclick="@(() => DeleteProduct(item.Id))"
+                                                   title="Delete"
+                                                   class="btn btn-danger btn-sm me-2">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            }
+                        </Columns>
+                    </RadzenDataGrid>
+                </div>
             </div>
         </div>
     }
@@ -150,4 +173,65 @@
             notificationService.Notify(message);
         }
     }
+
+    private async Task DeleteProduct(Guid Id)
+    {
+        try
+        {
+            bool? dialogResponse = await dialogService.Confirm(
+                                           "Are you sure you want to delete? All the related Transactions would also be deleted.",
+                                           "Confirm",
+                                           new ConfirmOptions()
+                                           {
+                                               CancelButtonText = "Cancel",
+                                               OkButtonText = "Delete"
+                                           });
+            if (dialogResponse == true)
+            {
+
+                var response = await clientApiService.SendAsync<Guid, object>(HttpMethod.Post, $"Product/DeleteProduct/{Id}", Id, hasReturnData: false);
+                if (response.IsSuccessStatusCode)
+                {
+                    dialogService.Close(Id);
+                    var message = new NotificationMessage
+                    {
+                        Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = "Product Deleted Successfully",
+                        Duration = 4000
+                    };
+                    notificationService.Notify(message);
+                    await LoadData();
+                }
+                else
+                {
+                    Console.WriteLine("Error While Calling API");
+                    var message = new NotificationMessage
+                    {
+                        Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = "Something went wrong.",
+                        Duration = 4000
+                    };
+                    notificationService.Notify(message);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            var message = new NotificationMessage
+            {
+                Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = "Something went wrong.",
+                Duration = 4000
+            };
+            notificationService.Notify(message);
+        }
+    }
+
 }

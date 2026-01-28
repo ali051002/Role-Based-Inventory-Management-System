@@ -17,6 +17,23 @@ namespace IMS.Infrastructure.Repository
 {
     public class CategoryRepository(DatabaseContext _dbContext, IMapper _mapper) : ICategoryRepository
     {
+        public async Task DeleteCategory(Guid Id)
+        {
+            try
+            {
+                var category = await _dbContext.Categories.FindAsync(Id);
+                if (category != null)
+                {
+                    _dbContext.Categories.Remove(category);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<CategoryDetailResponseDto>> GetAllCategories()
         {
             try

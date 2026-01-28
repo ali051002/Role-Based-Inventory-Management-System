@@ -10,13 +10,13 @@
     <div class="row">
         <div class="col-xl-6 mb-2">
             <RadzenLabel class="form-label d-block" Text="Category *" />
-            <RadzenDropDown Placeholder="Select" Name="Category" class="form-control" TValue="Guid" Data="CategoryDetailList" TextProperty="Name" ValueProperty="Id" Change="@(args => OnCategoryChange(args))" @bind-Value="selectedCategoryId" />
+            <RadzenDropDown Placeholder="Select" Name="Category" class="form-control" TValue="Guid" Data="CategoryDetailList.Where(c => c.IsActive == true)" TextProperty="Name" ValueProperty="Id" Change="@(args => OnCategoryChange(args))" @bind-Value="selectedCategoryId" />
             <RadzenRequiredValidator Component="Category" DefaultValue="Guid.Empty" Text="Required Field" />
         </div>
 
         <div class="col-xl-6 mb-2">
             <RadzenLabel class="form-label d-block" Text="Product *" />
-            <RadzenDropDown Placeholder="Select" Name="Product" class="form-control" TValue="Guid" Data="productDetailList" TextProperty="Name" ValueProperty="Id" @bind-Value="Request.ProductId" Disabled="selectedCategoryId == Guid.Empty" Change="@(args => OnProductChange(args))" />
+            <RadzenDropDown Placeholder="Select" Name="Product" class="form-control" TValue="Guid" Data="productDetailList.Where(c => c.IsActive == true)" TextProperty="Name" ValueProperty="Id" @bind-Value="Request.ProductId" Disabled="selectedCategoryId == Guid.Empty" Change="@(args => OnProductChange(args))" />
             <RadzenRequiredValidator Component="Product" DefaultValue="Guid.Empty" Text="Required Field" />
         </div>
 

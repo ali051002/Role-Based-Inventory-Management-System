@@ -14,5 +14,7 @@ namespace IMS.Application.Interfaces.Services
         Task<List<ProductDetailResponseDto>> GetProductsByCategory(Guid Id);
         Task SaveProduct(SaveProductRequestDto request);
         Task<ProductDetailResponseDto> GetProductById(Guid Id);
+        Task DeleteProduct(Guid Id);
+
     }
 }

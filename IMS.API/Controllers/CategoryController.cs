@@ -53,5 +53,20 @@ namespace IMS.API.Controllers
                 return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
             }
         }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("DeleteCategory/{Id}")]
+        public async Task<IActionResult> DeleteCategory(Guid Id)
+        {
+            try
+            {
+                await _iCategoryService.DeleteCategory(Id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
+            }
+        }
     }
 }

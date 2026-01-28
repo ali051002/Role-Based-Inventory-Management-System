@@ -14,6 +14,17 @@ namespace IMS.Application.Services
 {
     public class CategoryService(ICategoryRepository _iCategoryRepository, IMapper _mapper) : ICategoryService
     {
+        public async Task DeleteCategory(Guid Id)
+        {
+            try
+            {
+                await _iCategoryRepository.DeleteCategory(Id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task<List<CategoryDetailResponseDto>> GetAllCategories()
         {
             try

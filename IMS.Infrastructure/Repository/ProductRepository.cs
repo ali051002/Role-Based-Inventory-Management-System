@@ -16,6 +16,25 @@ namespace IMS.Infrastructure.Repository
 {
     public class ProductRepository(DatabaseContext _dbContext, IMapper _mapper) : IProductRepository
     {
+        public async Task DeleteProduct(Guid Id)
+        {
+            try
+            {
+                var product = _dbContext.Products.Where(p => p.Id == Id).FirstOrDefault();
+                if (product != null)
+                {
+                    _dbContext.Products.Remove(product);
+                    await _dbContext.SaveChangesAsync();
+
+                    return;
+                }
+            }
+            catch( Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<ProductDetailResponseDto>> GetAllProducts()
         {
             try
