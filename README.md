@@ -180,7 +180,7 @@ This ensures full traceability and accountability.
 
 ## Screenshots & Demo
 
-> Screenshots and demo video will be added.
+> Demo video will be added.
 
 * Login
 
