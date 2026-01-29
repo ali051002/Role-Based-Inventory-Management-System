@@ -26,10 +26,10 @@
                         <div class="d-flex justify-content-center">
                             <p>@category.ProductCount @(category.ProductCount > 1 ? "Products" : "Product")</p>
                         </div>
-                            @if (category.OutOfStockProducts > 0)
-                            {
-                                <p class="text-danger text-center mb-0" style="font-size : smaller">@category.OutOfStockProducts @(category.OutOfStockProducts > 1 ? "Products" : "Product") out of stock!</p>
-                            }
+                        @if (category.OutOfStockProducts > 0)
+                        {
+                            <p class="text-danger text-center mb-0" style="font-size : smaller">@category.OutOfStockProducts @(category.OutOfStockProducts > 1 ? "Products" : "Product") out of stock!</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -37,7 +37,7 @@
     </div>
 
     <div class="my-3">
-        <h2>Transactions</h2>
+        <h2>Transaction Logs</h2>
     </div>
 
     @if (loginState.Role == "admin")
@@ -50,22 +50,67 @@
     {
         <div class="card my-3 mb-3">
             <div class="card-body">
+                <RadzenCard Variant="Variant.Outlined" class="rz-my-4">
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+                        <RadzenCheckBox @bind-Value=@allowRowSelectOnRowClick Name="CheckBox1" />
+                        <RadzenLabel Text="Select" Component="CheckBox1" />
+                        @if (SelectedTransactionsList != null)
+                        {
+                            <RadzenButton Text="Clear selection" Click="@(args => SelectedTransactionsList = null)" />
+                            <RadzenButton Text="Clear selected logs" Click="@(args => DeleteTransactions())" />
+                        }
+                    </RadzenStack>
+                </RadzenCard>
                 <RadzenDataGrid @ref="TransactionGrid"
                                 Data="@TransactionDetailList?.OrderByDescending(x => x.CreatedDate)"
                                 TItem="StockTransactionDetailResponseDto"
                                 AllowPaging="true"
                                 PageSize="10"
                                 AllowSorting="true"
+                                AllowFiltering="true"
+                                FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 EmptyText="No Record Found"
                                 Count="@(TransactionDetailList?.Count ?? 0)"
                                 PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
                                 PageSizeText="Items Per Page"
                                 PageSizeOptions="@(new List<int> { 10, 25, 50, 100 })"
                                 PagingSummaryFormat=""
-                                ShowPagingSummary="true">
+                                ShowPagingSummary="true"
+                                AllowRowSelectOnRowClick="@allowRowSelectOnRowClick"
+                                SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@SelectedTransactionsList>
                     <Columns>
+                        @if (allowRowSelectOnRowClick)
+                        {
+                            <RadzenDataGridColumn Width="60px" Sortable="false" Filterable="false">
+                                <HeaderTemplate>
+                                    <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?"
+                                                    InputAttributes="@(new Dictionary<string, object>() { { "aria-label", "Select all items" } })"
+                                                    Value="@(SelectedTransactionsList != null && SelectedTransactionsList.Count == (TransactionDetailList?.Count ?? 0))"
+                                                    Change="@(args => SelectedTransactionsList = args == true ? TransactionDetailList?.ToList() : new List<StockTransactionDetailResponseDto>())" />
+                                </HeaderTemplate>
+                                <Template Context="data">
+                                    <RadzenCheckBox TabIndex="-1" TriState="false"
+                                                    TValue="bool"
+                                                    InputAttributes="@(new Dictionary<string, object>() { { "aria-label", "Select item" } })"
+                                                    Value="@(SelectedTransactionsList != null && SelectedTransactionsList.Contains(data))"
+                                                    Change=@(args => { if(!allowRowSelectOnRowClick) { TransactionGrid.SelectRow(data); }}) />
+                                </Template>
+                            </RadzenDataGridColumn>
+                        }
                         <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="TransactionType" Title="Type" Width="120px" />
-                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="ProductName" Title="Product Name" Width="120px" />
+                        <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="ProductName" Title="Product Name" Width="120px">
+                            <Template Context="item">
+                                @if (item.ProductId == null)
+                                {
+                                    <span class="text-danger">@item.ProductName</span>
+                                }
+                                else
+                                {
+                                    <span>@item.ProductName</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="Quantity" Title="Quantity" Width="120px" />
                         <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedBy" Title="Created By" Width="120px" />
                         <RadzenDataGridColumn TItem="StockTransactionDetailResponseDto" Property="CreatedDate" Title="Transaction Date" FormatString="{0:MM/dd/yyyy}" Width="120px" />
@@ -80,7 +125,11 @@
 @code {
     private List<CategoryDetailResponseDto> CategoryDetailList { get; set; } = new();
     private List<StockTransactionDetailResponseDto> TransactionDetailList { get; set; } = new();
+    // private List<StockTransactionDetailResponseDto> SelectedTransactionsList { get; set; } = new();
+    private IList<StockTransactionDetailResponseDto>? SelectedTransactionsList { get; set; }
+    private List<StockTransactionDetailResponseDto> TransactionsToDelete { get; set; }
     protected RadzenDataGrid<StockTransactionDetailResponseDto>? TransactionGrid = new RadzenDataGrid<StockTransactionDetailResponseDto>();
+    private bool allowRowSelectOnRowClick = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -184,6 +233,67 @@
             {
                 await LoadCategories();
                 await LoadTransactions();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            var message = new NotificationMessage
+            {
+                Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                Severity = NotificationSeverity.Error,
+                Summary = "Error",
+                Detail = "Something went wrong.",
+                Duration = 4000
+            };
+            notificationService.Notify(message);
+        }
+    }
+
+    private async Task DeleteTransactions()
+    {
+        try
+        {
+            bool? dialogResponse = await dialogService.Confirm(
+                                           "Are you sure you want to clear selected transaction logs?",
+                                           "Confirm",
+                                           new ConfirmOptions()
+                                           {
+                                               CancelButtonText = "Cancel",
+                                               OkButtonText = "Clear"
+                                           });
+            if (dialogResponse == true)
+            {
+                TransactionsToDelete = SelectedTransactionsList.ToList();
+                var response = await clientApiService.SendAsync<List<StockTransactionDetailResponseDto>, object>(HttpMethod.Post, $"Transaction/DeleteTransaction", TransactionsToDelete, hasReturnData: false);
+                if (response.IsSuccessStatusCode)
+                {
+                    dialogService.Close(TransactionsToDelete);
+                    var message = new NotificationMessage
+                    {
+                        Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = "Transaction logs cleared Successfully",
+                        Duration = 4000
+                    };
+                    notificationService.Notify(message);
+                    SelectedTransactionsList = null;
+                    await LoadTransactions();
+                }
+                else
+                {
+                    Console.WriteLine("Error While Calling API");
+                    var message = new NotificationMessage
+                    {
+                        Style = "position: fixed !important; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;",
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = "Something went wrong.",
+                        Duration = 4000
+                    };
+                    notificationService.Notify(message);
+                }
             }
         }
         catch (Exception ex)

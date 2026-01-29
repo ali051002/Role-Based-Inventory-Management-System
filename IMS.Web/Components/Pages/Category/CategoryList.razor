@@ -34,6 +34,9 @@
                                 AllowPaging="true"
                                 PageSize="10"
                                 AllowSorting="true"
+                                AllowFiltering="true"
+                                FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 EmptyText="No Record Found"
                                 Count="@(CategoryDetailList?.Count ?? 0)"
                                 PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
@@ -179,7 +182,7 @@
         try
         {
             bool? dialogResponse = await dialogService.Confirm(
-                                           "Are you sure you want to delete? All the related Products and Transactions would also be deleted.",
+                                           "Are you sure you want to delete? All the related Products would also be deleted.",
                                            "Confirm",
                                            new ConfirmOptions()
                                            {

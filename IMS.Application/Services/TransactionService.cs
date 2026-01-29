@@ -12,6 +12,18 @@ namespace IMS.Application.Services
 {
     public class TransactionService(ITransactionRepository _iTransactionRepository) : ITransactionService
     {
+        public async Task DeleteTransaction(List<StockTransactionRequestDto> request)
+        {
+            try
+            {
+                await _iTransactionRepository.DeleteTransaction(request);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<StockTransactionDetailResponseDto>> GetAllTransactions()
         {
             try

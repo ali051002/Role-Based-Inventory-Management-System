@@ -12,6 +12,7 @@ namespace IMS.Application.Interfaces.Services
     {
         Task<List<StockTransactionDetailResponseDto>> GetAllTransactions();
         Task StockTransaction(StockTransactionRequestDto request);
+        Task DeleteTransaction(List<StockTransactionRequestDto> request);
 
     }
 }

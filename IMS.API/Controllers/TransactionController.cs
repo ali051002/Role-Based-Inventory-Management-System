@@ -39,5 +39,19 @@ namespace IMS.API.Controllers
                 return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
             }
         }
+
+        [HttpPost("DeleteTransaction")]
+        public async Task<IActionResult> DeleteTransaction(List<StockTransactionRequestDto> request)
+        {
+            try
+            {
+                await _iTransactionService.DeleteTransaction(request);
+                return Ok(new { Message = "Transactions deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, InnerException = ex.InnerException?.Message });
+            }
+        }
     }
 }

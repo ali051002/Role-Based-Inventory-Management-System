@@ -2,31 +2,38 @@
 using IMS.Application.Interfaces.Repositories;
 using IMS.Domain.Entities;
 using IMS.Infrastructure.DbContext;
-using IMS.Shared.DTOs.Product.Response;
 using IMS.Shared.DTOs.StockTransaction.Request;
 using IMS.Shared.DTOs.StockTransaction.Response;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IMS.Infrastructure.Repository
 {
     public class TransactionRepository(DatabaseContext _dbContext, IMapper _mapper) : ITransactionRepository
     {
+        public async Task DeleteTransaction(List<StockTransactionRequestDto> request)
+        {
+            try
+            {
+                var idsToDelete = request.Select(r => r.Id).ToList();
+
+                await _dbContext.StockTransactions.Where(st => idsToDelete.Contains(st.Id)).ExecuteDeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<List<StockTransactionDetailResponseDto>> GetAllTransactions()
         {
             try
             {
                 var query = from s in _dbContext.StockTransactions
-                            join p in _dbContext.Products on s.ProductId equals p.Id
                             select new StockTransactionDetailResponseDto
                             {
                                 Id = s.Id,
                                 ProductId = s.ProductId,
-                                ProductName = p.Name,
+                                ProductName = s.ProductName,
                                 Quantity = s.Quantity,
                                 CreatedDate = s.CreatedDate,
                                 CreatedBy = s.CreatedBy,
@@ -65,6 +72,7 @@ namespace IMS.Infrastructure.Repository
                 {
                     Id = Guid.NewGuid(),
                     ProductId = request.ProductId,
+                    ProductName = product.Name,
                     Quantity = request.Quantity,
                     TransactionType = request.TransactionType,
                     Reference = request.Reference,
