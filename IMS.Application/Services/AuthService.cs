@@ -23,7 +23,8 @@ namespace IMS.Application.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(request.Email);
+                //var user = await _userManager.FindByEmailAsync(request.Email);
+                var user = await _userManager.FindByNameAsync(request.Username);
 
                 if (user != null)
                 {
@@ -134,10 +135,10 @@ namespace IMS.Application.Services
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
                 claims: claims,
                 notBefore: null,
-                expires: DateTime.Now.AddMinutes(10),
+                expires: DateTime.Now.AddMinutes(15),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -145,17 +146,13 @@ namespace IMS.Application.Services
 
         private string BuildRefreshToken()
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-
-            var creds = new SigningCredentials(
-                key, SecurityAlgorithms.HmacSha256);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                claims: new[] { new System.Security.Claims.Claim("type", "refresh") },
-                notBefore: null,
+                audience: _config["Jwt:Audience"],
+                claims: new[] { new Claim("type", "refresh") },
                 expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds);
 
@@ -164,27 +161,81 @@ namespace IMS.Application.Services
 
         private bool ValidateRefreshToken(string refreshToken)
         {
+            if (string.IsNullOrEmpty(refreshToken)) return false;
+
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateAudience = false, // set false
+                    ValidateLifetime = false, // set false
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = _config["Jwt:Issuer"],
-                    ValidAudience = _config["Jwt:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_config["Jwt:Key"]!))
+                    ValidAudience = _config["Jwt:Audience"],
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!))
                 };
+
                 tokenHandler.ValidateToken(refreshToken, tokenValidationParameters, out SecurityToken validatedToken);
+
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                return jwtToken?.Claims.Any(c => c.Type == "type" && c.Value == "refresh") ?? false;
+                return jwtToken.Claims.Any(c => c.Type == "type" && c.Value == "refresh");
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
+            }
+        }
+
+        public async Task<TokenResponseDto> RefreshToken(string refreshToken)
+        {
+            try
+            {
+                var user = _userManager.Users
+                            .FirstOrDefault(u => u.RefreshToken == refreshToken);
+                var isValid = ValidateRefreshToken(refreshToken);
+
+                if (user == null || !isValid)
+                    return null;
+
+                var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? string.Empty;
+                var newAccessToken = BuildAccessToken(user, role);
+                var refreshTokenString = BuildRefreshToken();
+                user.RefreshToken = refreshTokenString;
+                await _userManager.UpdateAsync(user);
+
+                return new TokenResponseDto
+                {
+                    Token = newAccessToken,
+                    RefreshToken = refreshTokenString
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async void RemoveRefreshToken(string refreshToken)
+        {
+            try
+            {
+                var user = _userManager.Users
+                            .FirstOrDefault(u => u.RefreshToken == refreshToken);
+
+                if (user == null)
+                    return;
+
+                user.RefreshToken = null;
+                await _userManager.UpdateAsync(user);
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

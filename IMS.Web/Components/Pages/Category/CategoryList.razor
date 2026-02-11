@@ -51,15 +51,15 @@
                             <Template Context="item">
                                 @if (item.IsActive)
                                 {
-                                    <p class="text-center mb-0 fw-bold text-primary">Active</p>
+                                    <span class="text-center mb-0 fw-bold text-white bg-info rounded-pill p-1" style="font-size: small">Active</span>
                                 }
                                 else
                                 {
-                                    <p class="text-center mb-0 fw-bold text-danger">In Active</p>
+                                    <span class="text-center mb-0 fw-bold text-white bg-danger rounded-pill p-1" style="font-size: small">In Active</span>
                                 }
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Title="Action" CssClass="text-center" Sortable="false" Width="60px">
+                        <RadzenDataGridColumn TItem="CategoryDetailResponseDto" Title="Action" CssClass="text-center" Filterable="false" Sortable="false" Width="60px">
                             <Template Context="item">
                                 <div class="justify-content-center">
                                     @if (loginState.Role == "admin")
@@ -67,14 +67,14 @@
                                         <a aria-label="anchor"
                                            @onclick="@(() => AddEditCategory(item.Id))"
                                            title="Edit"
-                                           class="btn btn-primary btn-sm me-2">
+                                           class="btn btn-primary btn-sm me-2 rounded-circle">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                     }
                                     <a aria-label="anchor"
                                        @onclick="@(() => navigationManager.NavigateTo($"/productList/{@item.Name}/{item.Id}"))"
                                        title="View Products"
-                                       class="btn btn-primary btn-sm me-2">
+                                       class="btn btn-info btn-sm me-2 rounded-circle">
                                         <i class="bi bi-diagram-2"></i>
                                     </a>
 
@@ -83,7 +83,7 @@
                                         <a aria-label="anchor"
                                            @onclick="@(() => DeleteCategory(item.Id))"
                                            title="Delete"
-                                           class="btn btn-danger btn-sm me-2">
+                                           class="btn btn-danger btn-sm me-2 rounded-circle">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     }

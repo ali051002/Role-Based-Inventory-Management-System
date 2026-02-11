@@ -54,5 +54,27 @@ namespace IMS.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occurred while inserting role : {ex.Message}" });
             }
         }
+
+        [HttpPost("refreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        {
+            try
+            {
+                var response = await authService.RefreshToken(request.RefreshToken);
+                if(response == null)
+                {
+                    return Unauthorized(new { message = "Invalid refresh token." });
+                }
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occurred during token refresh : {ex.Message}" });
+            }
+        }
     }
 }

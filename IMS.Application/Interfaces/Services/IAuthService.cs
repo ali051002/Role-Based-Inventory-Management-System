@@ -10,6 +10,7 @@ namespace IMS.Application.Interfaces.Services
     public interface IAuthService
     {
         Task<LoginResponseDto> Login(LoginRequestDto request);
+        Task<TokenResponseDto> RefreshToken(string refreshToken);
         Task Register(SignUpRequestDto request);
         Task InsertRole(string role);
     }

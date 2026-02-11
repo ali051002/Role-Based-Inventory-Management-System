@@ -64,9 +64,36 @@ namespace IMS.Web.Services
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    _navigationManager.NavigateTo("/unauthorized");
-                    return new ApiResponse { StatusCode = response.StatusCode, IsSuccessStatusCode = false };
+                    var newToken = await RefreshTokenAsync();
 
+                    if (string.IsNullOrEmpty(newToken))
+                    {
+                        _navigationManager.NavigateTo("/unauthorized");
+                        return new ApiResponse { StatusCode = HttpStatusCode.Unauthorized, Message = "ApiClientService: Invalid Refresh Token", IsSuccessStatusCode = false };
+                    }
+
+                    var refreshedRequest = new HttpRequestMessage(method, endpoint)
+                    {
+                        Content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json")
+                    };
+
+                    refreshedRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newToken);
+
+                    var refreshedTokenResponse = await client.SendAsync(refreshedRequest);
+
+                    if (refreshedTokenResponse.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        return new ApiResponse { StatusCode = refreshedTokenResponse.StatusCode, IsSuccessStatusCode = false };
+                    }
+
+                    object resultData = null;
+
+                    if (hasReturnData)
+                    {
+                        resultData = await refreshedTokenResponse.Content.ReadFromJsonAsync<TResponse>();
+                    }
+
+                    return new ApiResponse { StatusCode = refreshedTokenResponse.StatusCode, IsSuccessStatusCode = true, ResultData = resultData };
                 }
                 else
                 {
@@ -106,9 +133,33 @@ namespace IMS.Web.Services
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    _navigationManager.NavigateTo("/unauthorized");
-                    return new ApiResponse { StatusCode = response.StatusCode, IsSuccessStatusCode = false };
+                    var newToken = await RefreshTokenAsync();
 
+                    if (string.IsNullOrEmpty(newToken))
+                    {
+                        _navigationManager.NavigateTo("/unauthorized");
+                        return new ApiResponse { StatusCode = HttpStatusCode.Unauthorized, Message = "ApiClientService: Invalid Refresh Token", IsSuccessStatusCode = false };
+                    }
+
+                    var refreshedRequest = new HttpRequestMessage(HttpMethod.Get, endpointWithQuery);
+
+                    refreshedRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newToken);
+
+                    var refreshedTokenResponse = await client.SendAsync(refreshedRequest);
+
+                    if (refreshedTokenResponse.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        return new ApiResponse { StatusCode = refreshedTokenResponse.StatusCode, IsSuccessStatusCode = false };
+                    }
+
+                    object resultData = null;
+
+                    if (hasReturnData)
+                    {
+                        resultData = await refreshedTokenResponse.Content.ReadFromJsonAsync<TResponse>();
+                    }
+
+                    return new ApiResponse { StatusCode = refreshedTokenResponse.StatusCode, IsSuccessStatusCode = true, ResultData = resultData };
                 }
                 else
                 {
@@ -119,6 +170,47 @@ namespace IMS.Web.Services
             catch (Exception ex)
             {
                 return new ApiResponse { StatusCode = HttpStatusCode.BadRequest, IsSuccessStatusCode = false, ResultData = new BadRequestResponse { Message = ex.Message, InnerException = ex.InnerException?.Message } };
+            }
+        }
+        #endregion
+
+        #region RefreshToken
+        private async Task<string> RefreshTokenAsync()
+        {
+
+            var refreshToken = await _localStorage.GetAsync<string>("RefreshToken");
+
+            if (!string.IsNullOrEmpty(refreshToken.Value))
+            {
+                var url = _config.GetValue<string>("ApiUrl") + "Auth/refreshToken";
+                var payload = new { RefreshToken = refreshToken.Value };
+                var response = await new HttpClient().PostAsJsonAsync(url, payload);
+                var respText = await response.Content.ReadAsStringAsync();
+                //Console.WriteLine("Refresh Token Response: " + respText);
+                if (response.IsSuccessStatusCode)
+                {
+                    var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponseDto>();
+                    if (tokenResponse != null)
+                    {
+                        try
+                        {
+                            await _localStorage.SetAsync("AccessToken", tokenResponse.Token);
+                            await _localStorage.SetAsync("RefreshToken", tokenResponse.RefreshToken);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            return null;
+                        }
+                        return tokenResponse.Token;
+                    }
+                    return null;
+                }
+
+                return null;
+            }
+            else
+            {
+                return null;
             }
         }
         #endregion

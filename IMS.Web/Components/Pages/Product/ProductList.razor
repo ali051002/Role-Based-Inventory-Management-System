@@ -50,11 +50,11 @@
                                 <Template Context="item">
                                     @if (item.IsActive)
                                     {
-                                        <p class="text-center mb-0 fw-bold text-primary">Active</p>
+                                        <span class="text-center mb-0 fw-bold text-white bg-info rounded-pill p-1" style="font-size: small">Active</span>
                                     }
                                     else
                                     {
-                                        <p class="text-center mb-0 fw-bold text-danger">In Active</p>
+                                        <span class="text-center mb-0 fw-bold text-white bg-danger rounded-pill p-1" style="font-size: small">In Active</span>
                                     }
                                 </Template>
                             </RadzenDataGridColumn>
@@ -67,7 +67,7 @@
                                             <a aria-label="anchor"
                                                @onclick="@(() => AddEditProduct(item.Id, Guid.Parse(CategoryId)))"
                                                title="Edit"
-                                               class="btn btn-primary btn-sm me-2">
+                                               class="btn btn-primary btn-sm me-2 rounded-circle">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             @if (loginState.Role == "admin")
@@ -75,7 +75,7 @@
                                                 <a aria-label="anchor"
                                                    @onclick="@(() => DeleteProduct(item.Id))"
                                                    title="Delete"
-                                                   class="btn btn-danger btn-sm me-2">
+                                                   class="btn btn-danger btn-sm me-2 rounded-circle">
                                                     <i class="bi bi-trash"></i>
                                                 </a>
                                             }

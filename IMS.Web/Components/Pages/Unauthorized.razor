@@ -2,12 +2,13 @@
 @page "/unauthorized"
 
 <h3>Unauthorized Access</h3>
-
-<button type="button" class="btn btn-primary" @onclick="ReturnToLogin">Return to Login</button>
+<p style="font-size: smaller">navigating to login...</p>
 
 @code {
-    private void ReturnToLogin()
+
+    protected override async Task OnInitializedAsync()
     {
+        await Task.Delay(3000);
         NavigationManager.NavigateTo("/");
     }
 }
